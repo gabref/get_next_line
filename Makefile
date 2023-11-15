@@ -2,7 +2,7 @@ NAME 	= bin/final
 SRC 	= $(wildcard src/*.c)
 OBJ 	= $(patsubst src/%.c, obj/%.o, $(SRC))
 CC 		= cc
-CFLAGS 	= -Wall -Wextra -Werror
+CFLAGS 	= -Wall -Wextra -Werror -g3
 
 obj/%.o : src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@ -I src
@@ -12,8 +12,8 @@ $(NAME): $(OBJ)
 
 all: $(NAME)
 
-run:
-	./$(NAME)
+run: all
+	./$(NAME) < test_file
 
 clean:
 	rm -f obj/*.o
