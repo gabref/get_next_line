@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/15 18:18:18 by galves-f          #+#    #+#             */
+/*   Updated: 2023/11/15 18:18:19 by galves-f         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
@@ -10,5 +22,9 @@
 # include <unistd.h>
 
 char	*get_next_line(int fd);
+int		has_newline(int start, char *str);
+int		find_newline(char *str);
+int		ft_strlen(char *str);
+char	*strjoin(char *s1, char *s2, int s1_len, int s2_len);
 
 #endif
