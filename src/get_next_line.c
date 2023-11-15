@@ -6,18 +6,18 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:39:06 by galves-f          #+#    #+#             */
-/*   Updated: 2023/11/15 17:39:50 by galves-f         ###   ########.fr       */
+/*   Updated: 2023/11/15 18:12:33 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	has_newline(char *str)
+int	has_newline(int start, char *str)
 {
 	if (!str)
 		return (0);
-	while (*str)
-		if (*str++ == '\n')
+	while (str[start])
+		if (str[start++] == '\n')
 			return (1);
 	return (0);
 }
@@ -40,12 +40,14 @@ int	ft_strlen(char *str)
 	int	i;
 
 	i = 0;
+	if (!str)
+		return (0);
 	while (str[i])
 		i++;
 	return (i);
 }
 
-char	*strjoin(char *s1, char *s2)
+char	*strjoin(char *s1, char *s2, int s1_len, int s2_len)
 {
 	char	*newstr;
 	int		i;
@@ -58,7 +60,7 @@ char	*strjoin(char *s1, char *s2)
 	}
 	if (s1 == NULL || s2 == NULL)
 		return (NULL);
-	newstr = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	newstr = malloc(sizeof(char) * (s1_len + s2_len + 1));
 	if (newstr == NULL)
 		return (NULL);
 	i = 0;
@@ -76,21 +78,21 @@ int	read_fd_add_cache(int fd, char **cache)
 {
 	int		rbytes;
 	char	*buf;
+	int		last_cache_len;
 
-	rbytes = 1;
 	buf = (char *)malloc(sizeof(char) + (BUFFER_SIZE + 1));
 	if (buf == NULL)
 		return (0);
-	while (rbytes > 0 && !has_newline(*cache))
+	rbytes = 1;
+	last_cache_len = 0;
+	while (rbytes > 0 && !has_newline(last_cache_len, *cache))
 	{
 		rbytes = read(fd, buf, BUFFER_SIZE);
 		if (rbytes == -1)
-		{
-			free(buf);
 			return (0);
-		}
 		buf[rbytes] = '\0';
-		*cache = strjoin(*cache, buf);
+		last_cache_len = ft_strlen(*cache);
+		*cache = strjoin(*cache, buf, last_cache_len, rbytes);
 		if (*cache == NULL)
 			return (0);
 	}
@@ -104,7 +106,7 @@ int	extract_line(char *cache, int cache_len, char **next_line)
 
 	if (!cache)
 		return (0);
-	if (has_newline(cache))
+	if (has_newline(0, cache))
 		len = find_newline(cache) + 1;
 	else
 		len = cache_len;
@@ -123,7 +125,7 @@ int	clean_cache(char **cache, int cache_len)
 	int		start;
 	int		i;
 
-	if (has_newline(*cache))
+	if (has_newline(0, *cache))
 		start = find_newline(*cache) + 1;
 	else
 		start = cache_len;
