@@ -6,7 +6,7 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:18:18 by galves-f          #+#    #+#             */
-/*   Updated: 2023/11/15 18:18:19 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/11 17:34:54 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,18 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-char	*get_next_line(int fd);
-int		has_newline(int start, char *str);
-int		find_newline(char *str);
-int		ft_strlen(char *str);
-char	*strjoin(char *s1, char *s2, int s1_len, int s2_len);
+typedef struct s_cache
+{
+	int		len;
+	char	*str;
+}			t_cache;
+
+char		*get_next_line(int fd);
+size_t		ft_strlen(const char *s);
+char		*ft_strchr(const char *s, int c);
+char		*ft_strdup(const char *s);
+size_t		ft_strlcpy(char *dst, const char *src, size_t size);
+char		*ft_substr(char const *s, unsigned int start, size_t len);
+char		*ft_strjoin(char const *s1, char const *s2);
 
 #endif

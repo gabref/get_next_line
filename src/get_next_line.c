@@ -6,107 +6,97 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:39:06 by galves-f          #+#    #+#             */
-/*   Updated: 2023/11/15 18:17:19 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/11 19:24:54 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-int	read_fd_add_cache(int fd, char **cache)
+int	read_and_add_cache(int fd, t_cache **cache)
 {
-	int		rbytes;
-	char	*buf;
-	int		last_cache_len;
+	char	buffer[BUFFER_SIZE + 1];
+	int		nbytes;
+	char	*cur;
 
-	buf = (char *)malloc(sizeof(char) + (BUFFER_SIZE + 1));
-	if (buf == NULL)
+	nbytes = read(fd, buffer, BUFFER_SIZE);
+	buffer[nbytes] = '\0';
+	if (nbytes == -1)
 		return (0);
-	rbytes = 1;
-	last_cache_len = 0;
-	while (rbytes > 0 && !has_newline(last_cache_len, *cache))
+	while (nbytes != 0 && !ft_strchr(buffer, '\n'))
 	{
-		rbytes = read(fd, buf, BUFFER_SIZE);
-		if (rbytes == -1)
+		cur = (*cache)->str;
+		(*cache)->str = ft_strjoin(cur, buffer);
+		(*cache)->len += nbytes;
+		free(cur);
+		nbytes = read(fd, buffer, BUFFER_SIZE);
+		if (nbytes == -1)
 			return (0);
-		buf[rbytes] = '\0';
-		last_cache_len = ft_strlen(*cache);
-		*cache = strjoin(*cache, buf, last_cache_len, rbytes);
-		if (*cache == NULL)
-			return (0);
+		buffer[nbytes] = '\0';
 	}
-	free(buf);
 	return (1);
 }
 
-int	extract_line(char *cache, int cache_len, char **next_line)
+char	*clean_cache_and_get_line(t_cache **cache)
 {
-	int	len;
-
-	if (!cache)
-		return (0);
-	if (has_newline(0, cache))
-		len = find_newline(cache) + 1;
-	else
-		len = cache_len;
-	*next_line = malloc(sizeof(char) + (len + 1));
-	if (*next_line == NULL)
-		return (0);
-	(*next_line)[len] = '\0';
-	while (--len >= 0)
-		(*next_line)[len] = cache[len];
-	return (1);
-}
-
-int	clean_cache(char **cache, int cache_len)
-{
-	char	*temp;
-	int		start;
+	char	*newline;
+	char	*cur;
 	int		i;
 
-	if (has_newline(0, *cache))
-		start = find_newline(*cache) + 1;
-	else
-		start = cache_len;
-	if ((cache_len - start + 1) == 0)
-		return (1);
-	temp = *cache;
-	*cache = malloc(sizeof(char) * (cache_len - start + 1));
+	if ((*cache)->str == NULL || (*cache)->str[0] == '\0')
+		return (NULL);
+	i = 0;
+	while ((*cache)->str[i] != '\n' && (*cache)->str[i] != '\0')
+		i++;
+	newline = ft_substr((*cache)->str, 0, i);
+	cur = (*cache)->str;
+	(*cache)->str = ft_substr((*cache)->str, i + 1, (*cache)->len - i);
+	(*cache)->len -= i;
+	free(cur);
+	return (newline);
+}
+
+void	init_cache(t_cache **cache)
+{
 	if (*cache == NULL)
 	{
-		free(temp);
-		return (0);
+		printf("initialize\n");
+		*cache = (t_cache *)malloc(sizeof(t_cache));
+		(*cache)->str = ft_strdup("");
+		(*cache)->len = 0;
 	}
-	i = 0;
-	while (temp[start])
-		(*cache)[i++] = temp[start++];
-	(*cache)[i] = '\0';
-	free(temp);
-	return (1);
+}
+
+int	clean_cache(t_cache **cache)
+{
+	if ((*cache)->len == 0)
+	{
+		printf("clean\n");
+		free((*cache)->str);
+		free(*cache);
+		*cache = NULL;
+		return (1);
+	}
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*next_line;
-	static char	*cache;
-	int			ok;
-	int			cache_len;
+	static t_cache	*cache;
+	int				ok;
+	char			*newline;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &next_line, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	ok = read_fd_add_cache(fd, &cache);
+	init_cache(&cache);
+	ok = read_and_add_cache(fd, &cache);
 	if (!ok)
 		return (NULL);
-	cache_len = ft_strlen(cache);
-	ok = extract_line(cache, cache_len, &next_line);
-	if (!ok)
-		return (NULL);
-	ok = clean_cache(&cache, cache_len);
-	if (!ok)
-		return (NULL);
-	if (*next_line == '\0')
+	newline = clean_cache_and_get_line(&cache);
+	if (!newline)
 	{
-		free(next_line);
+		clean_cache(&cache);
 		return (NULL);
 	}
-	return (next_line);
+	return (newline);
 }
