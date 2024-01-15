@@ -1,4 +1,5 @@
 #include "get_next_line.h"
+// #include "leak_detector_c.h"
 #include <stdio.h>
 
 void	ft_putstr(char *str)
@@ -13,6 +14,7 @@ int	main(void)
 	char	*line;
 	int		i;
 
+	// atexit(report_mem_leak);
 	fd = 0;
 	i = 0;
 	do

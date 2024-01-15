@@ -6,7 +6,7 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:39:06 by galves-f          #+#    #+#             */
-/*   Updated: 2023/11/15 18:17:19 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/14 13:26:25 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (*next_line == '\0')
 	{
+		free(cache);
 		free(next_line);
 		return (NULL);
 	}
