@@ -6,7 +6,7 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:39:06 by galves-f          #+#    #+#             */
-/*   Updated: 2024/01/14 13:26:25 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/17 01:49:00 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,25 +88,22 @@ char	*get_next_line(int fd)
 {
 	char		*next_line;
 	static char	*cache;
-	int			ok;
 	int			cache_len;
 
 	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &next_line, 0) < 0)
 		return (NULL);
-	ok = read_fd_add_cache(fd, &cache);
-	if (!ok)
+	if (!read_fd_add_cache(fd, &cache))
 		return (NULL);
 	cache_len = ft_strlen(cache);
-	ok = extract_line(cache, cache_len, &next_line);
-	if (!ok)
+	if (!extract_line(cache, cache_len, &next_line))
 		return (NULL);
-	ok = clean_cache(&cache, cache_len);
-	if (!ok)
+	if (!clean_cache(&cache, cache_len))
 		return (NULL);
 	if (*next_line == '\0')
 	{
 		free(cache);
 		free(next_line);
+		cache = NULL;
 		return (NULL);
 	}
 	return (next_line);

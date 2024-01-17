@@ -1,6 +1,6 @@
 NAME 	= bin/final
 # SRC 	= $(wildcard src/*.c)
-SRC 	= src/get_next_line.c src/get_next_line_utils.c src/main.c src/leak_detector_c.c
+SRC 	= src/get_next_line.c src/get_next_line_utils.c src/main.c
 OBJ 	= $(patsubst src/%.c, obj/%.o, $(SRC))
 CC 		= cc
 CFLAGS 	= -Wall -Wextra -Werror -g3 -ggdb

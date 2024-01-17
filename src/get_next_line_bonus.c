@@ -6,7 +6,7 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:39:06 by galves-f          #+#    #+#             */
-/*   Updated: 2024/01/15 13:54:15 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/17 01:51:07 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,25 +88,22 @@ char	*get_next_line(int fd)
 {
 	char		*next_line;
 	static char	*cache[4096];
-	int			ok;
 	int			cache_len;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, &next_line, 0) < 0)
+	if (fd < 0 || fd > 4096 || BUFFER_SIZE < 1 || read(fd, &next_line, 0) < 0)
 		return (NULL);
-	ok = read_fd_add_cache(fd, &cache[fd]);
-	if (!ok)
+	if (!read_fd_add_cache(fd, &cache[fd]))
 		return (NULL);
 	cache_len = ft_strlen(cache[fd]);
-	ok = extract_line(cache[fd], cache_len, &next_line);
-	if (!ok)
+	if (!extract_line(cache[fd], cache_len, &next_line))
 		return (NULL);
-	ok = clean_cache(&cache[fd], cache_len);
-	if (!ok)
+	if (!clean_cache(&cache[fd], cache_len))
 		return (NULL);
 	if (*next_line == '\0')
 	{
 		free(cache[fd]);
 		free(next_line);
+		cache[fd] = NULL;
 		return (NULL);
 	}
 	return (next_line);

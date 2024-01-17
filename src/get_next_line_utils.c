@@ -6,7 +6,7 @@
 /*   By: galves-f <galves-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 18:16:08 by galves-f          #+#    #+#             */
-/*   Updated: 2023/11/15 18:16:15 by galves-f         ###   ########.fr       */
+/*   Updated: 2024/01/15 14:10:03 by galves-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	has_newline(int start, char *str)
 {
 	if (!str)
 		return (0);
-	while (str[start])
+	while (*str && str[start])
 		if (str[start++] == '\n')
 			return (1);
 	return (0);
